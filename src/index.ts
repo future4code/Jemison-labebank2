@@ -52,17 +52,41 @@ let accounts: account[] = [
 
 //Endpoint que cadastra um novo usuário
 app.post("/accounts", (req: Request, res: Response) => {
-    const {name, cpf, birthDate} = req.body
+    const { name, cpf, birthDate } = req.body
 
-    const newAccount: account= {
+    const newAccount: account = {
         name,
         cpf,
         birthDate,
         balance: 0,
         transactions: []
     }
-    accounts.push(newAccount)
-    res.status(200).send("Create account")
+
+    const separateDate = birthDate.split("/")
+
+    const validateAge = function (birthdayYear: number, birthdayMonth: number, birthdayDay: number) {
+        let d = new Date
+
+        let currentYear = d.getFullYear()
+        let currentMonth = d.getMonth() + 1
+        let currentDay = d.getDate()
+
+        if (currentYear - birthdayYear > 17) {
+            return true
+        } else if (currentMonth >= birthdayMonth && currentDay >= birthdayDay) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    if(!validateAge(separateDate[0], separateDate[1], separateDate[2])){
+        res.status(400).send('Conta não criada. É necessário ter 18 anos')
+    } else {
+        accounts.push(newAccount)
+        res.status(200).send("Create account")
+    }
+
 })
 
 // Endpoint que retorna todos os usuários 

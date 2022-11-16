@@ -64,14 +64,15 @@ app.post("/accounts/newAccount", (req: Request, res: Response) => {
 
         if (!validateAge(Number(separateDate[0]), Number(separateDate[1]), Number(separateDate[2]))) {
             res.status(400).send('Conta não criada. É necessário ter 18 anos ou mais')
-        } accounts.push({
+        }else{ accounts.push({
             id: accounts.length + 1,
             name: name,
             cpf: cpf,
             birthDate: birthDate,
             balance: 0
+        
         })
-
+    }
         res.status(200).send('Conta criada com sucesso')
 
     } catch (error: any) {

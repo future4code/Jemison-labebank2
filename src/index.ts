@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express"
-import { accounts } from './data'
+import { accounts, Transactions } from './data'
 import { Account, Transaction } from "./types"
 import cors from 'cors'
 
@@ -89,3 +89,63 @@ app.get("/accounts", (req: Request, res: Response) => {
 app.listen(3003, () => {
     console.log("Server is running in http://localhost:3003");
 });
+
+
+//Endpoint que adiciona saldo
+let errorCode = 400
+
+app.put("/accounts/account", (req: Request, res: Response) => {
+
+    try {
+
+    const {name, value, cpf} = req.body
+
+    if(!cpf || !name || !value) {
+        errorCode = 422
+        throw new Error("Passe todos os paramentros");
+    }
+
+    if(typeof(name) !== "string") {
+        errorCode = 422
+        throw new Error("Name inválido");    
+    }
+
+    if(typeof(cpf) !== "string" || isNaN(Number(cpf)) || cpf.length !== 11 || cpf.includes(" ")) {
+        errorCode = 422
+        throw new Error("CPF inválido");   
+    }
+
+    if(typeof(value) !== "number") {
+        errorCode = 422
+        throw new Error("Valor inválido");
+    }
+
+    let check: boolean = false
+
+    for (const account of accounts) {
+        if (account.name === name && account.cpf === cpf) {
+            check = true
+        }
+    }
+    if (check === false) {
+        errorCode = 422
+        throw new Error("Please check name and cpf");
+    }
+
+    accounts = accounts.map(account => {
+        if (account.name === name && account.cpf === cpf) {
+            return {
+                name: account.name,
+                cpf: account.cpf,
+                birthDate: account.birthDate,
+                balance: account.balance + value,
+            }
+        }else{
+            return account
+        }
+    })
+    res.status(200).send(accounts)
+} catch (error: any) {
+    res.status(errorCode).send(error.message)
+}
+})

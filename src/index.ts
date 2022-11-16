@@ -12,21 +12,21 @@ app.use(cors())
 
 //Endpoint que cadastra um novo usuário
 app.post("/accounts/newAccount", (req: Request, res: Response) => {
-    
+
     let errorCode = 500
 
-    try{
-        const { name, cpf, birthDate }:Account = req.body
+    try {
+        const { name, cpf, birthDate }: Account = req.body
 
         const separateDate = birthDate.split("/")
-    
+
         const validateAge = function (birthdayYear: number, birthdayMonth: number, birthdayDay: number) {
             let d = new Date
-    
+
             let currentYear = d.getFullYear()
             let currentMonth = d.getMonth() + 1
             let currentDay = d.getDate()
-    
+
             if (currentYear - birthdayYear > 17) {
                 return true
             } else if (currentMonth >= birthdayMonth && currentDay >= birthdayDay) {
@@ -62,10 +62,10 @@ app.post("/accounts/newAccount", (req: Request, res: Response) => {
             throw new Error('Data de nascimento do usuário da nova conta faltando')
         }
 
-        if(!validateAge(Number(separateDate[0]), Number(separateDate[1]), Number(separateDate[2]))){
+        if (!validateAge(Number(separateDate[0]), Number(separateDate[1]), Number(separateDate[2]))) {
             res.status(400).send('Conta não criada. É necessário ter 18 anos ou mais')
-        }   accounts.push({
-            id:accounts.length + 1,
+        } accounts.push({
+            id: accounts.length + 1,
             name: name,
             cpf: cpf,
             birthDate: birthDate,
@@ -74,12 +74,12 @@ app.post("/accounts/newAccount", (req: Request, res: Response) => {
 
         res.status(200).send('Conta criada com sucesso')
 
-    }catch (error: any) {
+    } catch (error: any) {
 
         res.status(errorCode).send(error.message)
     }
 })
-   
+
 
 // Endpoint que retorna todos os usuários 
 app.get("/accounts", (req: Request, res: Response) => {
@@ -98,54 +98,56 @@ app.put("/accounts/account", (req: Request, res: Response) => {
 
     try {
 
-    const {name, value, cpf} = req.body
+        const { name, value, cpf } = req.body
 
-    if(!cpf || !name || !value) {
-        errorCode = 422
-        throw new Error("Passe todos os paramentros");
-    }
-
-    if(typeof(name) !== "string") {
-        errorCode = 422
-        throw new Error("Name inválido");    
-    }
-
-    if(typeof(cpf) !== "string" || isNaN(Number(cpf)) || cpf.length !== 11 || cpf.includes(" ")) {
-        errorCode = 422
-        throw new Error("CPF inválido");   
-    }
-
-    if(typeof(value) !== "number") {
-        errorCode = 422
-        throw new Error("Valor inválido");
-    }
-
-    let check: boolean = false
-
-    for (const account of accounts) {
-        if (account.name === name && account.cpf === cpf) {
-            check = true
+        if (!cpf || !name || !value) {
+            errorCode = 422
+            throw new Error("Passe todos os paramentros");
         }
-    }
-    if (check === false) {
-        errorCode = 422
-        throw new Error("Please check name and cpf");
-    }
 
-    accounts = accounts.map(account => {
-        if (account.name === name && account.cpf === cpf) {
-            return {
-                name: account.name,
-                cpf: account.cpf,
-                birthDate: account.birthDate,
-                balance: account.balance + value,
+        if (typeof (name) !== "string") {
+            errorCode = 422
+            throw new Error("Name inválido");
+        }
+
+        if (typeof (cpf) !== "string" || isNaN(Number(cpf)) || cpf.length !== 11 || cpf.includes(" ")) {
+            errorCode = 422
+            throw new Error("CPF inválido");
+        }
+
+        if (typeof (value) !== "number") {
+            errorCode = 422
+            throw new Error("Valor inválido");
+        }
+
+        let check: boolean = false
+
+        for (const account of accounts) {
+            if (account.name === name && account.cpf === cpf) {
+                check = true
             }
-        }else{
-            return account
         }
-    })
-    res.status(200).send(accounts)
-} catch (error: any) {
-    res.status(errorCode).send(error.message)
-}
+        if (check === false) {
+            errorCode = 422
+            throw new Error("Please check name and cpf");
+        }
+        let userBalance = {}
+        accounts.map((account) => {
+            if (account.name === name && account.cpf === cpf) {
+                account.balance = account.balance + value
+                 userBalance = {
+                    name: account.name,
+                    cpf: account.cpf,
+                    birthDate: account.birthDate,
+                    balance: account.balance
+                }
+            
+            return userBalance
+    }})
+        
+        res.status(200).send(userBalance)
+        
+    } catch (error: any) {
+        res.status(errorCode).send(error.message)
+    }
 })

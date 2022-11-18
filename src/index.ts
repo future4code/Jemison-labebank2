@@ -155,6 +155,7 @@ app.put("/accounts/account", (req: Request, res: Response) => {
     }
 })
 
+
 //Endpoint que paga conta
 
 app.patch("/accounts/:id/payTheBills", (req: Request, res: Response) => {
@@ -224,3 +225,38 @@ app.patch("/accounts/:id/payTheBills", (req: Request, res: Response) => {
     }
 
 })
+
+// Endpoint pega saldo
+
+app.get("/accounts/account", (req: Request, res: Response) => {
+    try{
+        if(!req.query.cpf) {
+            errorCode = 422
+            throw new Error("Informe o CPF");
+        }
+
+        const cpf = req.query.cpf as string
+
+        if (typeof(cpf) !== "string" || isNaN(Number(cpf)) || cpf.length !== 11 || cpf.includes(" ")) {
+            errorCode = 422
+            res.send("CPF incorreto")
+        } 
+
+        const accountBalance = accounts.filter(account => {
+            return account.cpf === cpf
+        }).map(account => {
+            return { balance: account.balance}
+        })
+
+        if (accountBalance.length === 0) {
+            errorCode = 404
+            throw new Error("Conta não encontrada");
+        }
+
+        res.status(200).send(accountBalance)
+
+    } catch (error: any){
+        res.status(errorCode).send(error.message)
+    }
+})
+

@@ -5,7 +5,9 @@ export type Transaction = {
     payerId:number
     dateTime:string
     value:number
+    description?:string 
     recieverId:number
+    
 }
 
 export type Account = {

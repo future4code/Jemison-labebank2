@@ -24,19 +24,21 @@ export let accounts: Account[] = [
     }
 ]
 
-export const Transactions: Transaction[] = [
+export const transactions: Transaction[] = [
     {
         id: 1,
         payerId: 1,
         dateTime: '10/11/2022 15:40',
         value: 150,
+        description: "devolução empréstimo",
         recieverId: 3
     },
     {
         id: 2,
         payerId: 1,
         dateTime: '10/11/2022 18:00',
-        value: 300,
+        value: 100,
+        description: "encomenda de bolo",
         recieverId: 3
     },
     {
@@ -44,6 +46,7 @@ export const Transactions: Transaction[] = [
         payerId: 3,
         dateTime: '11/11/2022 09:10',
         value: 300,
+        description: "carona até a praia",
         recieverId: 2
     },
 

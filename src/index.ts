@@ -199,14 +199,15 @@ app.put("/accounts/addBalance", (req: Request, res: Response) => {
     } catch (error: any) {
         res.status(errorCode).send(error.message)
     }
+
 })
+
 
 //Endpoint que paga conta
 
 app.post("/accounts/payTheBills", (req: Request, res: Response) => {
 
     let errorCode = 500
-
 
     try {
 
@@ -426,7 +427,9 @@ app.post("/accounts/moneyTransfer", (req: Request, res: Response) => {
 })
 
 
+
 app.listen(3003, () => {
     console.log("Server is running in http://localhost:3003");
 });
+
 
